@@ -140,8 +140,16 @@ class PDFOutlineExtractor:
             prev = merged_outline[-1]
             curr = outline[i]
             if curr['level'] == prev['level'] and curr['page'] == prev['page']:
-                merged_outline[-1]['text'] += " " + curr['text']
+                if isinstance(merged_outline[-1]['text'], list):
+                    merged_outline[-1]['text'].append(curr['text'])
+                else:
+                    merged_outline[-1]['text'] = [merged_outline[-1]['text'], curr['text']]
             else:
                 merged_outline.append(curr)
+
+        # Ensure all 'text' fields are lists
+        for entry in merged_outline:
+            if not isinstance(entry['text'], list):
+                entry['text'] = [entry['text']]
 
         return {"title": title, "outline": merged_outline}
