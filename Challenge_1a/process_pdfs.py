@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from extractor import PDFOutlineExtractor
 
 def process_pdfs():
@@ -16,12 +17,16 @@ def process_pdfs():
     for filename in os.listdir(input_dir):
         if filename.lower().endswith('.pdf'):
             pdf_path = os.path.join(input_dir, filename)
-            json_path = os.path.join(output_dir, 'output.json')  # Always output to output.json
+            json_filename = os.path.splitext(filename)[0] + '.json'
+            json_path = os.path.join(output_dir, json_filename)
 
             print(f"Processing {pdf_path}...")
             try:
+                start_time = time.time()
                 extractor = PDFOutlineExtractor(pdf_path)
                 result = extractor.extract()
+                end_time = time.time()
+                result["processing_time"] = round(end_time - start_time, 4)
 
                 with open(json_path, 'w', encoding='utf-8') as f:
                     json.dump(result, f, indent=2, ensure_ascii=False)

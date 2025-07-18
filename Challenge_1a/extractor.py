@@ -131,25 +131,13 @@ class PDFOutlineExtractor:
                                     "page": page_num
                                 })
 
-        # Post-processing: Merge consecutive lines of the same heading style
-        if not outline:
-            return {"title": title, "outline": []}
+        # Post-processing: Do not merge consecutive lines of the same heading style; keep all tags separate
+        # Ensure all 'text' fields are strings (not lists)
+        for entry in outline:
+            if isinstance(entry['text'], list):
+                entry['text'] = ' '.join(entry['text'])
 
-        merged_outline = [outline[0]]
-        for i in range(1, len(outline)):
-            prev = merged_outline[-1]
-            curr = outline[i]
-            if curr['level'] == prev['level'] and curr['page'] == prev['page']:
-                if isinstance(merged_outline[-1]['text'], list):
-                    merged_outline[-1]['text'].append(curr['text'])
-                else:
-                    merged_outline[-1]['text'] = [merged_outline[-1]['text'], curr['text']]
-            else:
-                merged_outline.append(curr)
-
-        # Ensure all 'text' fields are lists
-        for entry in merged_outline:
-            if not isinstance(entry['text'], list):
-                entry['text'] = [entry['text']]
-
-        return {"title": title, "outline": merged_outline}
+        result = {"outline": outline}
+        if title:
+            result["title"] = title
+        return result
