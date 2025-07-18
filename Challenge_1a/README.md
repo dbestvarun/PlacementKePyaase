@@ -5,7 +5,7 @@
 ```
 Challenge_1a/
 ├── sample_dataset/
-│   ├── outputs/         # JSON files provided as outputs.
+│   ├── outputs/         # JSON files provided as outputs (one per input PDF)
 │   ├── pdfs/            # Input PDF files
 │   └── schema/          # Output schema definition
 │       └── output_schema.json
@@ -30,17 +30,25 @@ Challenge_1a/
    ```
    The output will be written to:
    ```
-   Challenge_1a/sample_dataset/outputs/output.json
+   Challenge_1a/sample_dataset/outputs/<input_filename>.json
    ```
+   For example, `file1.pdf` will produce `file1.json` in the outputs folder. All PDFs in the input folder will be processed and a separate JSON file will be created for each.
 
 ## Docker
 
 To build and run with Docker:
 ```bash
-docker build --platform linux/amd64 -t <reponame.someidentifier> .
-docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output/repoidentifier/:/app/output --network none <reponame.someidentifier>
+docker build --platform linux/amd64 -t challenge1a .
 ```
 
-- The output will always be written to `sample_dataset/outputs/output.json`.
-- In the output JSON, the `text` field for each tag is a list of strings, making it easier to distinguish multiple extracted texts.
+- For Command Prompt (cmd.exe):
+  ```cmd
+  docker run --rm -v "%cd%\sample_dataset\pdfs":/app/sample_dataset/pdfs:ro -v "%cd%\sample_dataset\outputs":/app/sample_dataset/outputs --network none challenge1a
+  ```
+- For PowerShell:
+  ```powershell
+  docker run --rm -v "${PWD}/sample_dataset/pdfs:/app/sample_dataset/pdfs:ro" -v "${PWD}/sample_dataset/outputs:/app/sample_dataset/outputs" --network none challenge1a
+  ```
+
+- The output will always be written to `sample_dataset/outputs/<input_filename>.json` for each input PDF.
 - The output schema is defined in `sample_dataset/schema/output_schema.json`. 
